@@ -726,3 +726,13 @@ nodeserver/node_modules/vary/index.js
 nodeserver/node_modules/vary/LICENSE
 nodeserver/node_modules/vary/package.json
 nodeserver/node_modules/vary/README.md
+23mymodules/vendor/modules.txt
+23mymodules/vendor/github.com/gorilla/mux/AUTHORS
+23mymodules/vendor/github.com/gorilla/mux/doc.go
+23mymodules/vendor/github.com/gorilla/mux/LICENSE
+23mymodules/vendor/github.com/gorilla/mux/middleware.go
+23mymodules/vendor/github.com/gorilla/mux/mux.go
+23mymodules/vendor/github.com/gorilla/mux/README.md
+23mymodules/vendor/github.com/gorilla/mux/regexp.go
+23mymodules/vendor/github.com/gorilla/mux/route.go
+23mymodules/vendor/github.com/gorilla/mux/test_helpers.go
