@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/mongo/driver/mongocrypt/options"
+	"golang.org/x/tools/go/analysis/passes/defers"
 )
 
 const connectionString = "mongodb://localhost:27017"
@@ -67,7 +68,7 @@ func updateOneMovie(movieId string) {
 
 //delete 1 record
 
-func deleteOneMovie(movieId, string) {
+func deleteOneMovie(movieId string) {
 	id, _ := primitive.ObjectIDFromHex(movieId)
 	filter := bson.M{"_id": id}
 	count, err := collection.DeleteOne(context.Background(), filter)
@@ -86,7 +87,26 @@ func deleteAllmovie() int64 {
 	}
 	fmt.Println("Number of movies deleted", deleteResult.DeletedCount)
 	return deleteResult.DeletedCount
-
 }
 
+// get all movies
 
+func getAllMovies() []primitive.M {
+	cur, err := collection.Find(context.Background(), bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var movies []primitive.M
+
+	for cur.Next(context.Background()) {
+		var movie bson.M
+		err := cur.Decode(&movie)
+		if err != nil {
+			log.Fatal(err)
+		}
+		movies = append(movies, movie)
+	}
+	defer cur.Close(context.Background())
+	return movies
+}
