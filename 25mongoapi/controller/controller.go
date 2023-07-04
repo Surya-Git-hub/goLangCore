@@ -45,12 +45,14 @@ func init() {
 
 //insert 1 record
 
-func insertOneMovie(movie model.Netflix) {
+func insertOneMovie(movie model.Netflix) model.Netflix {
 	inserted, err := collection.InsertOne(context.Background(), movie)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("Inserted 1 Movie in db with id : %T\n", inserted.InsertedID)
 	fmt.Println("Inserted 1 Movie in db with id : ", inserted.InsertedID)
+	return inserted
 }
 
 //updata 1 record
@@ -126,7 +128,8 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 
 	var movie model.Netflix
 	_ = json.NewDecoder(r.Body).Decode(&movie)
-	insertOneMovie(movie)
+	movieId := insertOneMovie(movie)
+	movie = movieId
 	json.NewEncoder(w).Encode(movie)
 
 }
