@@ -7,13 +7,15 @@ import (
 	// "time"
 )
 
+var signals = []string{"test"}
+
 var wg sync.WaitGroup // use pointer in future
+var mut sync.Mutex    // use pointer in future
 
 func main() {
 	// go greeter("Hello")
 	// greeter("World")
 
-	
 	websiteList := []string{
 		"https://lco.dev",
 		"https://go.dev",
@@ -22,13 +24,13 @@ func main() {
 		"https://github.com",
 	}
 
-
 	for _, web := range websiteList {
 		go getStatusCode(web)
 		wg.Add(1)
 	}
 
 	wg.Wait()
+	fmt.Println(signals)
 }
 
 // func greeter(s string) {
@@ -45,5 +47,8 @@ func getStatusCode(endpoint string) {
 	if err != nil {
 		fmt.Println("oops in endpoint")
 	}
+	mut.Lock()
+	signals = append(signals, endpoint)
+	mut.Unlock()
 	fmt.Printf("%d status code for website %s\n", res.StatusCode, endpoint)
 }
