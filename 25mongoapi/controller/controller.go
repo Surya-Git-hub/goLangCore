@@ -45,14 +45,20 @@ func init() {
 
 //insert 1 record
 
-func insertOneMovie(movie model.Netflix) model.Netflix {
+func insertOneMovie(movie model.Netflix) string {
 	inserted, err := collection.InsertOne(context.Background(), movie)
 	if err != nil {
 		log.Fatal(err)
 	}
+	objectid, ok := inserted.InsertedID.(primitive.ObjectID)
+	if !ok {
+		// handle the case where the type assertion fails
+		log.Fatal("Invalid inserted ID type")
+	}
+	id := objectid.Hex()
 	fmt.Printf("Inserted 1 Movie in db with id : %T\n", inserted.InsertedID)
 	fmt.Println("Inserted 1 Movie in db with id : ", inserted.InsertedID)
-	return inserted
+	return id
 }
 
 //updata 1 record
@@ -99,9 +105,7 @@ func getAllMovies() []primitive.M {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var movies []primitive.M
-
 	for cur.Next(context.Background()) {
 		var movie bson.M
 		err := cur.Decode(&movie)
@@ -125,13 +129,15 @@ func GetAllMovies(w http.ResponseWriter, r *http.Request) {
 func CreateMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Allow-Control-Allow-Methods", "POST")
-
 	var movie model.Netflix
 	_ = json.NewDecoder(r.Body).Decode(&movie)
-	movieId := insertOneMovie(movie)
-	movie = movieId
+	InsertedId := insertOneMovie(movie)
+	obid,err := primitive.ObjectIDFromHex(InsertedId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	movie.ID=obid
 	json.NewEncoder(w).Encode(movie)
-
 }
 
 func MarkAsWatched(w http.ResponseWriter, r *http.Request) {
